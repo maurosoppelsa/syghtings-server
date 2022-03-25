@@ -16,6 +16,10 @@ Syghtings server is the main backend service for syghtings app, it is suposed th
 `docker-compose up -d` <br>
 `docker-compose down`
 
+## Testing
+
+`http://localhost:3000/healthcheck`
+
 ## Licence
 
 nothing yet
