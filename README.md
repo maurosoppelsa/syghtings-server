@@ -20,6 +20,17 @@ Syghtings server is the main backend service for syghtings app, it is suposed th
 
 `http://localhost:3000/healthcheck`
 
+
+## kubernetes
+
+navigate k8s folder:
+
+`minikube start` <br>
+`kubectl apply -f syghtings-server.yml`
+`kubectl apply -f ingress.yml`
+`kubectl describe ingress syghtings-server-ingress`
+
+navigate address property on the browser
 ## Licence
 
 nothing yet

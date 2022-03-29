@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: syghtings-server-deployment
+  labels:
+    app: syghtings-server
+spec: 
+  replicas: 1
+  selector:
+    matchLabels:
+      app: syghtings-server
+  template:
+    metadata: 
+      labels:
+        app: syghtings-server
+    spec:
+      containers:
+      - name: syghtings-server
+        image: maurosoppelsa/syghtings_server:version0.1
+        ports:
+        - containerPort: 3000
+#         env:
+#         - name: MONGO_INITDB_ROOT_USERNAME
+#           valueFrom:
+#             secretKeyRef: 
+#               name: mongodb-secret
+#               key: mongo-root-username
+#         - name: MONGO_INITDB_ROOT_PASSWORD
+#           valueFrom:
+#             secretKeyRef: 
+#               name: mongodb-secret
+#               key: mongo-root-password
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: syghtings-server-service
+spec:
+  selector:
+    app: syghtings-server
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000 
