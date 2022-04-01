@@ -11,7 +11,6 @@ import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
-
 class App {
   public app: express.Application;
   public env: string;
@@ -71,7 +70,7 @@ class App {
     };
 
     const specs = swaggerJSDoc(options);
-    this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+    this.app.use('/documentation', swaggerUi.serve, swaggerUi.setup(specs));
   }
 
   private initializeErrorHandling() {

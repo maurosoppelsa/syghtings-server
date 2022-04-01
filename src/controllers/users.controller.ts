@@ -18,9 +18,8 @@ class UsersController {
 
   public getUserById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = Number(req.params.id);
+      const userId = String(req.params.id);
       const findOneUserData: User = await this.userService.findUserById(userId);
-
       res.status(200).json({ data: findOneUserData, message: 'findOne' });
     } catch (error) {
       next(error);
@@ -29,7 +28,7 @@ class UsersController {
 
   public createUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userData: CreateUserDto = req.body;
+      const userData: User = req.body;
       const createUserData: User = await this.userService.createUser(userData);
 
       res.status(201).json({ data: createUserData, message: 'created' });
@@ -40,9 +39,9 @@ class UsersController {
 
   public updateUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = Number(req.params.id);
+      const userId = String(req.params.id);
       const userData: CreateUserDto = req.body;
-      const updateUserData: User[] = await this.userService.updateUser(userId, userData);
+      const updateUserData: User = await this.userService.updateUser(userId, userData);
 
       res.status(200).json({ data: updateUserData, message: 'updated' });
     } catch (error) {
@@ -52,8 +51,8 @@ class UsersController {
 
   public deleteUser = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const userId = Number(req.params.id);
-      const deleteUserData: User[] = await this.userService.deleteUser(userId);
+      const userId = String(req.params.id);
+      const deleteUserData: User = await this.userService.deleteUser(userId);
 
       res.status(200).json({ data: deleteUserData, message: 'deleted' });
     } catch (error) {
