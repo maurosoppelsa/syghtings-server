@@ -10,61 +10,84 @@ class UserService {
   public users = userModel;
   private mongoService = new MongoService();
 
+  private handleUnexpectedError = err => {
+    console.log(err);
+    throw new HttpException(500, 'something went wrong, try later');
+  };
+
   public async findAllUser(): Promise<User[]> {
-    await this.mongoService.connect();
-    const users: User[] = await this.users.find({});
-    await this.mongoService.close();
-    return users;
+    try {
+      await this.mongoService.connect();
+      const users: User[] = await this.users.find({});
+      await this.mongoService.close();
+      return users;
+    } catch (err) {
+      this.handleUnexpectedError(err);
+    }
   }
 
   public async findUserById(userId: String): Promise<User> {
-    await this.mongoService.connect();
-    const findUser: User = await this.users.findOne({ _id: userId });
-    if (!findUser) throw new HttpException(409, 'User not found');
-    await this.mongoService.close();
-    return findUser;
+    try {
+      await this.mongoService.connect();
+      const findUser: User = await this.users.findOne({ _id: userId });
+      if (!findUser) throw new HttpException(409, 'User not found');
+      await this.mongoService.close();
+      return findUser;
+    } catch (err) {
+      this.handleUnexpectedError(err);
+    }
   }
 
   public async createUser(userData: User): Promise<User> {
-    await this.mongoService.connect();
-    if (isEmpty(userData)) throw new HttpException(400, 'Wrong user data');
-    const findUser = await this.users.find({ username: userData.username });
+    try {
+      await this.mongoService.connect();
+      if (isEmpty(userData)) throw new HttpException(400, 'Wrong user data');
+      const findUser = await this.users.find({ username: userData.username });
 
-    if (findUser.length !== 0) throw new HttpException(409, `The user ${userData.username} already exists`);
+      if (findUser.length !== 0) throw new HttpException(409, `The user ${userData.username} already exists`);
 
-    const hashedPassword = await hash(userData.password, 10);
-    const createUserData: User = { ...userData };
-    const user = new userModel({
-      username: userData.username,
-      email: userData.email,
-      password: hashedPassword,
-    });
-
-    user.save(err => {
-      if (err) {
-        return err;
-      }
-    });
-    await this.mongoService.close();
-    return createUserData;
+      const hashedPassword = await hash(userData.password, 10);
+      const createUserData: User = { ...userData };
+      const user = new userModel({
+        username: userData.username,
+        email: userData.email,
+        password: hashedPassword,
+      });
+      user.save(err => {
+        if (err) {
+          return err;
+        }
+      });
+      await this.mongoService.close();
+      return createUserData;
+    } catch (err) {
+      this.handleUnexpectedError(err);
+    }
   }
 
   public async updateUser(userId: String, userData: CreateUserDto): Promise<User> {
-    await this.mongoService.connect();
-    if (isEmpty(userData)) throw new HttpException(400, 'Wrong user data');
-
-    const findUser = await this.users.findByIdAndUpdate({ _id: userId }, userData);
-    if (!findUser) throw new HttpException(409, 'User not found');
-    await this.mongoService.close();
-    return findUser;
+    try {
+      await this.mongoService.connect();
+      if (isEmpty(userData)) throw new HttpException(400, 'Wrong user data');
+      const findUser = await this.users.findByIdAndUpdate({ _id: userId }, userData);
+      if (!findUser) throw new HttpException(409, 'User not found');
+      await this.mongoService.close();
+      return findUser;
+    } catch (err) {
+      this.handleUnexpectedError(err);
+    }
   }
 
   public async deleteUser(userId: String): Promise<User> {
-    await this.mongoService.connect();
-    const findUser = this.users.findByIdAndRemove({ _id: userId });
-    if (!findUser) throw new HttpException(409, 'User not found');
-    await this.mongoService.close();
-    return findUser;
+    try {
+      await this.mongoService.connect();
+      const findUser = this.users.findByIdAndRemove({ _id: userId });
+      if (!findUser) throw new HttpException(409, 'User not found');
+      await this.mongoService.close();
+      return findUser;
+    } catch (err) {
+      this.handleUnexpectedError(err);
+    }
   }
 }
 

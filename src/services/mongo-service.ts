@@ -4,6 +4,7 @@ class MongoService {
   public async connect() {
     try {
       //TODO hanlde environment URI
+      //TODO configure setTimeOut connection
       await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/sygthings-db');
     } catch (error) {
       console.log(error);
