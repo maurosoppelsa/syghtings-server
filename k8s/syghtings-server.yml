@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: syghtings-server
-        image: maurosoppelsa/syghtings_server:version0.1
+        image: maurosoppelsa/syghtings_server:latest
         ports:
         - containerPort: 3000
 #         env:
