@@ -1,8 +1,10 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsString, NotEquals, ValidateIf } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
-  public id: string;
+  @NotEquals(null)
+  @ValidateIf((object, value) => value !== undefined)
+  public id?: string;
 
   @IsString()
   public username: string;
