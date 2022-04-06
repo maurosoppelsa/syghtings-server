@@ -7,7 +7,7 @@ import { isEmpty } from '@utils/util';
 import MongoService from '@services/mongo-service';
 
 class UserService {
-  public users = userModel;
+  private users = userModel;
   private mongoService = new MongoService();
 
   public async findAllUser(): Promise<User[]> {
