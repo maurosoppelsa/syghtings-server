@@ -13,7 +13,6 @@ class UserService {
   public async findAllUser(): Promise<User[]> {
     await this.mongoService.connect();
     const users: User[] = await this.users.find({});
-    await this.mongoService.close();
     return users;
   }
 
@@ -21,7 +20,6 @@ class UserService {
     await this.mongoService.connect();
     const findUser: User = await this.users.findOne({ _id: userId });
     if (!findUser) throw new HttpException(409, 'User not found');
-    await this.mongoService.close();
     return findUser;
   }
 
@@ -41,8 +39,6 @@ class UserService {
     await user.save(async err => {
       if (err) {
         return err;
-      } else {
-        await this.mongoService.close();
       }
     });
     return createUserData;
@@ -53,7 +49,6 @@ class UserService {
     if (isEmpty(userData)) throw new HttpException(400, 'Wrong user data');
     const findUser = await this.users.findByIdAndUpdate({ _id: userId }, userData);
     if (!findUser) throw new HttpException(409, 'User not found');
-    await this.mongoService.close();
     return findUser;
   }
 
@@ -61,7 +56,6 @@ class UserService {
     await this.mongoService.connect();
     const findUser = await this.users.findByIdAndRemove({ _id: userId });
     if (!findUser) throw new HttpException(409, 'User not found');
-    await this.mongoService.close();
     return findUser;
   }
 }

@@ -16,7 +16,6 @@ const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFun
       const userId = verificationResponse.id;
       await mongoService.connect();
       const findUser = await userModel.findOne({ id: userId });
-      await mongoService.close();
       if (findUser) {
         req.user = findUser;
         next();

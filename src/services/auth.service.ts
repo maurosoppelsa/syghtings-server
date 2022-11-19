@@ -25,8 +25,6 @@ class AuthService {
 
     const tokenData = this.createToken(findUser);
     const cookie = this.createCookie(tokenData);
-
-    await this.mongoService.close();
     return { cookie, findUser };
   }
 
