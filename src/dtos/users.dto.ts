@@ -14,4 +14,7 @@ export class CreateUserDto {
 
   @IsString()
   public password: string;
+
+  @IsString()
+  public occupation: string;
 }

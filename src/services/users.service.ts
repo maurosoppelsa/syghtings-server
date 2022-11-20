@@ -35,6 +35,7 @@ class UserService {
       username: userData.username,
       email: userData.email,
       password: hashedPassword,
+      occupation: userData.occupation,
     });
     await user.save(async err => {
       if (err) {
