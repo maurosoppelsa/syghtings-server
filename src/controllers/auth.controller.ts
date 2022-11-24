@@ -26,7 +26,7 @@ class AuthController {
   public logOut = async (req: RequestWithUser, res: Response, next: NextFunction): Promise<void> => {
     try {
       res.setHeader('Set-Cookie', ['Authorization=; Max-age=0']);
-      res.status(200).json({ message: 'logout' });
+      res.status(200).json({ success: true });
     } catch (error) {
       next(error);
     }
