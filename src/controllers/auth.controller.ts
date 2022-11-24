@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { CreateUserDto } from '@dtos/users.dto';
 import { RequestWithUser } from '@interfaces/auth.interface';
-import { User } from '@interfaces/users.interface';
 import AuthService from '@services/auth.service';
 
 class AuthController {
@@ -11,9 +10,14 @@ class AuthController {
     try {
       const userData: CreateUserDto = req.body;
       const { cookie, findUser } = await this.authService.login(userData);
-
       res.setHeader('Set-Cookie', [cookie]);
-      res.status(200).json({ data: findUser, message: 'login' });
+      const user = {
+        userId: findUser.id,
+        userName: findUser.username,
+        email: findUser.email,
+        occupation: findUser.occupation,
+      }
+      res.status(200).json({ user, success: true });
     } catch (error) {
       next(error);
     }

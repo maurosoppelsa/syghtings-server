@@ -18,3 +18,16 @@ export class CreateUserDto {
   @IsString()
   public occupation: string;
 }
+
+export class LoginUserDto {
+  @IsString()
+  @NotEquals(null)
+  @ValidateIf((object, value) => value !== undefined)
+  public id?: string;
+
+  @IsString()
+  public username: string;
+
+  @IsString()
+  public password: string;
+}
