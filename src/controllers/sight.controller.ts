@@ -9,7 +9,7 @@ class SightController {
     public getSights = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
         try {
             const findAllSigths = await this.sightService.findAllSights();
-            res.status(200).json({ data: findAllSigths, message: 'findAll' });
+            res.status(200).json({ sights: findAllSigths, message: 'findAll' });
         } catch (error) {
             next(error);
         }
