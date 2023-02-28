@@ -29,7 +29,7 @@ class UsersController {
     try {
       const userData: User = req.body;
       const createUserData: User = await this.userService.createUser(userData);
-      res.status(201).json({ data: createUserData, message: 'created' });
+      res.status(201).json({ data: createUserData, message: 'created', success: true });
     } catch (error) {
       next(error);
     }
