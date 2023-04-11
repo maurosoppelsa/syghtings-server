@@ -12,11 +12,11 @@ class AuthController {
       const { cookie, findUser } = await this.authService.login(userData);
       res.setHeader('Set-Cookie', [cookie]);
       const user = {
-        userId: findUser.id,
+        id: findUser.id,
         username: findUser.username,
         email: findUser.email,
         occupation: findUser.occupation,
-      }
+      };
       res.status(200).json({ user, success: true });
     } catch (error) {
       next(error);
