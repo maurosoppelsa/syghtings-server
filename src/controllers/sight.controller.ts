@@ -15,6 +15,16 @@ class SightController {
     }
   };
 
+  public getSightsByUserIdExcludingOwn = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = String(req.params.userId);
+      const findAllSigthsByUserId = await this.sightService.findSightsByUserIdExcludingOwn(userId);
+      res.status(200).json({ data: findAllSigthsByUserId, message: 'findAllById' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public getSightsByUserId = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = String(req.params.userId);

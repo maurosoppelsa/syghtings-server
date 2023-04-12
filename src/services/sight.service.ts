@@ -14,6 +14,13 @@ class SightService {
     const sights: Sight[] = await this.sights.find({});
     return sights;
   }
+
+  public async findSightsByUserIdExcludingOwn(userId: string): Promise<Sight[]> {
+    await this.mongoService.connect();
+    const sights: Sight[] = await this.sights.find({ userId: { $ne: userId } });
+    return sights;
+  }
+
   public async findSightsByUserId(userId: string): Promise<Sight[]> {
     await this.mongoService.connect();
     const sights: Sight[] = await this.sights.find({ userId });
