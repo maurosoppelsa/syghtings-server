@@ -26,13 +26,14 @@ class UserService {
   public async createUser(userData: User): Promise<User> {
     await this.mongoService.connect();
     if (isEmpty(userData)) throw new HttpException(400, 'Wrong user data');
-    const findUser = await this.users.find({ $or: [{ username: userData.username }, { email: userData.email }] });
-    if (findUser.length !== 0) throw new HttpException(409, `The user or email already exists`);
+    const findUser = await this.users.find({ $or: [{ email: userData.email }] });
+    if (findUser.length !== 0) throw new HttpException(409, `The email already exists`);
 
     const hashedPassword = await hash(userData.password, 10);
     const createUserData: User = { ...userData };
     const user = new userModel({
-      username: userData.username,
+      name: userData.name,
+      lastName: userData.lastName,
       email: userData.email,
       password: hashedPassword,
       occupation: userData.occupation,

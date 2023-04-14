@@ -17,7 +17,7 @@ class AuthService {
     await this.mongoService.connect();
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
-    const findUser = await this.users.findOne({ username: userData.username });
+    const findUser = await this.users.findOne({ email: userData.email });
     if (!findUser) throw new HttpException(409, `User not found`);
 
     const isPasswordMatching: boolean = await compare(userData.password, findUser.password);

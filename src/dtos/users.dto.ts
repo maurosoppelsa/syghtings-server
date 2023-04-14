@@ -5,7 +5,10 @@ export class CreateUserDto {
   @NotEquals(null)
   @ValidateIf((object, value) => value !== undefined)
   @IsString()
-  public username: string;
+  public name: string;
+
+  @IsString()
+  public lastName: string;
 
   @IsEmail()
   public email: string;
@@ -24,7 +27,7 @@ export class LoginUserDto {
   public id?: string;
 
   @IsString()
-  public username: string;
+  public email: string;
 
   @IsString()
   public password: string;

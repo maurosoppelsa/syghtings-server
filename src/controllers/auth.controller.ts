@@ -13,7 +13,8 @@ class AuthController {
       res.setHeader('Set-Cookie', [cookie]);
       const user = {
         id: findUser.id,
-        username: findUser.username,
+        name: findUser.name,
+        lastName: findUser.lastName,
         email: findUser.email,
         occupation: findUser.occupation,
       };
