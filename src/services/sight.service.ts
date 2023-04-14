@@ -17,7 +17,31 @@ class SightService {
 
   public async findSightsByUserIdExcludingOwn(userId: string): Promise<Sight[]> {
     await this.mongoService.connect();
-    const sights: Sight[] = await this.sights.find({ userId: { $ne: userId } });
+
+    const sights: Sight[] = await this.sights.aggregate([
+      {
+        $match: {
+          userId: { $ne: userId },
+        },
+      },
+      { $set: { userId: { $toObjectId: '$userId' } } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      {
+        $project: {
+          'user._id': 0,
+          'user.password': 0,
+          'user.email': 0,
+        },
+      },
+    ]);
+
     return sights;
   }
 
