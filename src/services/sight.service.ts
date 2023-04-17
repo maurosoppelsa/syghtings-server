@@ -34,6 +34,13 @@ class SightService {
         },
       },
       {
+        $set: {
+          user: {
+            $arrayElemAt: ['$user', 0],
+          },
+        },
+      },
+      {
         $project: {
           'user._id': 0,
           'user.password': 0,
