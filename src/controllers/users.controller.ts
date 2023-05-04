@@ -40,7 +40,7 @@ class UsersController {
       const userId = String(req.params.id);
       const userData: CreateUserDto = req.body;
       const updateUserData: User = await this.userService.updateUser(userId, userData);
-      res.status(200).json({ data: updateUserData, message: 'updated' });
+      res.status(200).json({ user: updateUserData, message: 'updated', success: true });
     } catch (error) {
       next(error);
     }
@@ -50,7 +50,7 @@ class UsersController {
     try {
       const userId = String(req.params.id);
       const deleteUserData: User = await this.userService.deleteUser(userId);
-      res.status(200).json({ data: deleteUserData, message: 'deleted' });
+      res.status(200).json({ data: deleteUserData, message: 'deleted', success: true });
     } catch (error) {
       next(error);
     }
