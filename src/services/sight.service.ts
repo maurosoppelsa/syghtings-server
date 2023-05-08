@@ -24,6 +24,11 @@ class SightService {
           userId: { $ne: userId },
         },
       },
+      {
+        $sort: {
+          createdAt: -1,
+        },
+      },
       { $set: { userId: { $toObjectId: '$userId' } } },
       {
         $lookup: {
@@ -54,7 +59,7 @@ class SightService {
 
   public async findSightsByUserId(userId: string): Promise<Sight[]> {
     await this.mongoService.connect();
-    const sights: Sight[] = await this.sights.find({ userId });
+    const sights: Sight[] = await this.sights.find({ userId }).sort({ createdAt: -1 });
     return sights;
   }
   public async createSight(sightData: Sight): Promise<Sight> {
