@@ -9,7 +9,7 @@ class UsersController {
   public getUsers = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const findAllUsersData: User[] = await this.userService.findAllUser();
-      res.status(200).json({ data: findAllUsersData, message: 'findAll' });
+      res.status(200).json({ user: findAllUsersData, message: 'findAll' });
     } catch (error) {
       next(error);
     }
@@ -19,7 +19,7 @@ class UsersController {
     try {
       const userId = String(req.params.id);
       const findOneUserData: User = await this.userService.findUserById(userId);
-      res.status(200).json({ data: findOneUserData, message: 'findOne' });
+      res.status(200).json({ user: findOneUserData, message: 'findOne' });
     } catch (error) {
       next(error);
     }
@@ -29,7 +29,7 @@ class UsersController {
     try {
       const userData: User = req.body;
       const createUserData: User = await this.userService.createUser(userData);
-      res.status(201).json({ data: createUserData, message: 'created', success: true });
+      res.status(201).json({ user: createUserData, message: 'created', success: true });
     } catch (error) {
       next(error);
     }
@@ -50,7 +50,7 @@ class UsersController {
     try {
       const userId = String(req.params.id);
       const deleteUserData: User = await this.userService.deleteUser(userId);
-      res.status(200).json({ data: deleteUserData, message: 'deleted', success: true });
+      res.status(200).json({ user: deleteUserData, message: 'deleted', success: true });
     } catch (error) {
       next(error);
     }
