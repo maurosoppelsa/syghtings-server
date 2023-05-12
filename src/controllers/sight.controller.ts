@@ -60,7 +60,7 @@ class SightController {
     try {
       const sightId = String(req.params.sightId);
       const deleteSightData: Sight = await this.sightService.deleteSight(sightId);
-      res.status(200).json({ data: deleteSightData, message: 'deleted' });
+      res.status(200).json({ data: deleteSightData, message: 'deleted', success: true });
     } catch (error) {
       next(error);
     }
