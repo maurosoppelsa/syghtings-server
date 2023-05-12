@@ -77,12 +77,8 @@ class SightService {
       createdAt: sightData.createdAt,
       userId: sightData.userId,
     });
-    await sight.save(async err => {
-      if (err) {
-        console.log(err);
-        return err;
-      }
-    });
+    const savedSight = await sight.save();
+    createSightData.id = savedSight._id.toString();
     return createSightData;
   }
 
@@ -94,7 +90,7 @@ class SightService {
       if (!findSight) throw new HttpException(409, 'Sight not found');
       return findSight;
     } catch (error) {
-      throw new HttpException(500, 'Something went wrong');
+      throw new HttpException(500, error);
     }
   }
 
