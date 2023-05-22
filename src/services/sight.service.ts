@@ -86,7 +86,7 @@ class SightService {
     try {
       await this.mongoService.connect();
       if (isEmpty(sightData)) throw new HttpException(400, 'Wrong sight data');
-      const findSight = await this.sights.findByIdAndUpdate({ _id: sightId }, sightData);
+      const findSight = await this.sights.findByIdAndUpdate({ _id: sightId }, sightData, { new: true });
       if (!findSight) throw new HttpException(409, 'Sight not found');
       return findSight;
     } catch (error) {
