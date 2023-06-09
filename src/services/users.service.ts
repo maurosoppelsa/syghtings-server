@@ -6,10 +6,23 @@ import userModel from '@models/users.model';
 import { isEmpty } from '@utils/util';
 import MongoService from '@services/mongo-service';
 import * as bcrypt from 'bcrypt';
-
+import jwt from 'jsonwebtoken';
+import EmailService from './email.service';
+import regTokenModel from '@/models/reg-token.model';
 class UserService {
   private users = userModel;
+  private regTokens = regTokenModel;
   private mongoService = new MongoService();
+
+  private generateRegistrationToken(): string {
+    const jwtSecret = 'mysecretstring';
+    const jwtExpirationTime = '1h';
+    const payload = {
+      type: 'registration',
+    };
+    const token = jwt.sign(payload, jwtSecret, { expiresIn: jwtExpirationTime });
+    return token;
+  }
 
   public async findAllUser(): Promise<User[]> {
     await this.mongoService.connect();
@@ -44,6 +57,15 @@ class UserService {
         return err;
       }
     });
+
+    const registrationToken = new regTokenModel({
+      userId: user._id,
+      token: this.generateRegistrationToken(),
+      expiresAt: new Date(),
+    });
+
+    await Promise.all([registrationToken.save(), EmailService.sendRegistrationEmail(userData.email, user._id, this.generateRegistrationToken())]);
+
     return createUserData;
   }
 
@@ -83,6 +105,21 @@ class UserService {
     const findUser = await this.users.findByIdAndRemove({ _id: userId });
     if (!findUser) throw new HttpException(409, 'User not found');
     return findUser;
+  }
+
+  public async verifyUser(userId: String, token: String): Promise<boolean> {
+    await this.mongoService.connect();
+    return new Promise((resolve, reject) => {
+      this.regTokens.findOne({ userId: userId, token: token }, async (err, token) => {
+        if (err || !token) {
+          reject(false);
+        } else {
+          await this.regTokens.deleteMany({ userId: userId });
+          await this.users.updateOne({ _id: userId }, { $set: { verified: true } });
+          resolve(true);
+        }
+      });
+    });
   }
 }
 

@@ -9,6 +9,7 @@ const userModelSchema = new Schema<User>(
     email: { type: String, required: true },
     password: { type: String, required: true },
     occupation: { type: String, required: true },
+    verified: { type: Boolean, required: true, default: false },
   },
   {
     toJSON: {

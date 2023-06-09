@@ -1,4 +1,4 @@
-import { hash, compare } from 'bcrypt';
+import { compare } from 'bcrypt';
 import { sign } from 'jsonwebtoken';
 import { SECRET_KEY } from '@config';
 import { LoginUserDto } from '@dtos/users.dto';
