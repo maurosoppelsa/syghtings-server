@@ -60,11 +60,16 @@ class UsersController {
     try {
       const userId = String(req.params.id);
       const userRegistrationToken: string = req.params.token;
-      const isUserVerified: boolean = await this.userService.verifyUser(userId, userRegistrationToken);
-      if (isUserVerified) {
-        res.status(200).json({ message: 'User verified', success: true });
+      let isUserVerified = false;
+      if (userRegistrationToken) {
+        isUserVerified = await this.userService.verifyUser(userId, userRegistrationToken);
       } else {
-        res.status(400).json({ message: 'User not verified', success: false });
+        isUserVerified = await this.userService.checkUserRegistration(userId);
+      }
+      if (isUserVerified) {
+        res.status(200).json({ message: 'User verified', verified: true });
+      } else {
+        res.status(400).json({ message: 'User not verified', verified: false });
       }
     } catch (error) {
       next(error);

@@ -65,7 +65,7 @@ class UserService {
     });
 
     await Promise.all([registrationToken.save(), EmailService.sendRegistrationEmail(userData.email, user._id, this.generateRegistrationToken())]);
-
+    createUserData.id = user._id.toString();
     return createUserData;
   }
 
@@ -117,6 +117,21 @@ class UserService {
           await this.regTokens.deleteMany({ userId: userId });
           await this.users.updateOne({ _id: userId }, { $set: { verified: true } });
           resolve(true);
+        }
+      });
+    });
+  }
+
+  public async checkUserRegistration(userId: String): Promise<boolean> {
+    await this.mongoService.connect();
+    return new Promise((resolve, reject) => {
+      this.users.findOne({ _id: userId }, async (err, user) => {
+        if (err || !user) {
+          console.log('user', user);
+          console.log('err', err);
+          reject(false);
+        } else {
+          resolve(user.verified);
         }
       });
     });
