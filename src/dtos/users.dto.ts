@@ -69,3 +69,20 @@ export class LoginUserDto {
   @IsString()
   public password: string;
 }
+
+export class VerifyUserDto {
+  @IsString()
+  @NotEquals(null)
+  public id: string;
+
+  @IsString()
+  @NotEquals(null)
+  @ValidateIf((object, value) => value !== undefined)
+  public token?: string;
+}
+
+export class ResendVerificationEmailDto {
+  @IsString()
+  @NotEquals(null)
+  public id: string;
+}

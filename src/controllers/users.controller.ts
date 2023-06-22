@@ -75,6 +75,16 @@ class UsersController {
       next(error);
     }
   };
+
+  public resendVerificationEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = String(req.params.id);
+      this.userService.resendEmailVerification(userId);
+      res.status(200).json({ message: 'Email sent' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default UsersController;

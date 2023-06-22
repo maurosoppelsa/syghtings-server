@@ -136,6 +136,25 @@ class UserService {
       });
     });
   }
+
+  public resendEmailVerification(userId: string): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      await this.mongoService.connect();
+      const user = await this.users.findById(userId);
+      if (!user) {
+        reject(false);
+      } else {
+        await this.regTokens.deleteMany({ userId: userId });
+        const registrationToken = new regTokenModel({
+          userId: user._id,
+          token: this.generateRegistrationToken(),
+          expiresAt: new Date(),
+        });
+        await Promise.all([registrationToken.save(), EmailService.sendRegistrationEmail(user.email, user._id, this.generateRegistrationToken())]);
+        resolve(true);
+      }
+    });
+  }
 }
 
 export default UserService;
