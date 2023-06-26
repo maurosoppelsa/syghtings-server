@@ -10,6 +10,11 @@ const authMiddleware = async (req: RequestWithUser, res: Response, next: NextFun
   try {
     const Authorization = req.cookies['Authorization'] || (req.header('Authorization') ? req.header('Authorization').split('Bearer ')[1] : null);
     const mongoService = new MongoService();
+    // exclude auth-update-password route from middleware so user is able to reset the password
+    if (req.originalUrl === '/users/auth-update-password') {
+      return next();
+    }
+
     if (Authorization) {
       const secretKey: string = SECRET_KEY;
       const verificationResponse = (await verify(Authorization, secretKey)) as DataStoredInToken;

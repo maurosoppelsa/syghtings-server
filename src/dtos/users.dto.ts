@@ -86,3 +86,21 @@ export class ResendVerificationEmailDto {
   @NotEquals(null)
   public id: string;
 }
+
+export class ForgotPasswordDto {
+  @IsString()
+  @NotEquals(null)
+  public email: string;
+}
+
+export class UpdatePasswordDto {
+  @IsString()
+  @NotEquals(null)
+  @ValidateIf((object, value) => value !== undefined)
+  public email: string;
+
+  @IsString()
+  @NotEquals(null)
+  @ValidateIf((object, value) => value !== undefined)
+  public password: string;
+}

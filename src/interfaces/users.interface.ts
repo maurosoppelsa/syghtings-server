@@ -6,4 +6,5 @@ export interface User {
   password: string;
   occupation: string;
   verified: boolean;
+  allowResetPassword: boolean;
 }

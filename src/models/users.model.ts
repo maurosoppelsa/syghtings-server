@@ -10,6 +10,7 @@ const userModelSchema = new Schema<User>(
     password: { type: String, required: true },
     occupation: { type: String, required: true },
     verified: { type: Boolean, required: true, default: false },
+    allowResetPassword: { type: Boolean, required: true, default: false },
   },
   {
     toJSON: {
@@ -18,6 +19,7 @@ const userModelSchema = new Schema<User>(
         delete ret._id;
         delete ret.password;
         delete ret.__v;
+        delete ret.allowResetPassword;
         return ret;
       },
     },

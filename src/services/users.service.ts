@@ -14,7 +14,7 @@ class UserService {
   private regTokens = regTokenModel;
   private mongoService = new MongoService();
 
-  private generateRegistrationToken(): string {
+  private generateValidationToken(): string {
     const jwtSecret = 'mysecretstring';
     const jwtExpirationTime = '1h';
     const payload = {
@@ -60,11 +60,11 @@ class UserService {
 
     const registrationToken = new regTokenModel({
       userId: user._id,
-      token: this.generateRegistrationToken(),
+      token: this.generateValidationToken(),
       expiresAt: new Date(),
     });
 
-    await Promise.all([registrationToken.save(), EmailService.sendRegistrationEmail(userData.email, user._id, this.generateRegistrationToken())]);
+    await Promise.all([registrationToken.save(), EmailService.sendRegistrationEmail(userData.email, user._id, this.generateValidationToken())]);
     createUserData.id = user._id.toString();
     return createUserData;
   }
@@ -100,6 +100,26 @@ class UserService {
     return user;
   }
 
+  public async updateUserPassword(email: string, password: string): Promise<boolean> {
+    try {
+      const saltRounds = 10;
+      await this.mongoService.connect();
+      const user = await this.users.findOne({ email });
+      if (!user) {
+        return false;
+      }
+      if (!user.allowResetPassword) {
+        return false;
+      }
+      const newPassword = await bcrypt.hash(password, saltRounds);
+      await this.users.updateOne({ email }, { $set: { allowResetPassword: false, password: newPassword } });
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
+  }
+
   public async deleteUser(userId: String): Promise<User> {
     await this.mongoService.connect();
     const findUser = await this.users.findByIdAndRemove({ _id: userId });
@@ -107,7 +127,7 @@ class UserService {
     return findUser;
   }
 
-  public async verifyUser(userId: String, token: String): Promise<boolean> {
+  public async verifyUser(userId: String, token: String, allowResetPass = false): Promise<boolean> {
     await this.mongoService.connect();
     return new Promise((resolve, reject) => {
       this.regTokens.findOne({ userId: userId, token: token }, async (err, token) => {
@@ -115,7 +135,11 @@ class UserService {
           reject(false);
         } else {
           await this.regTokens.deleteMany({ userId: userId });
-          await this.users.updateOne({ _id: userId }, { $set: { verified: true } });
+          if (allowResetPass) {
+            await this.users.updateOne({ _id: userId }, { $set: { allowResetPassword: true } });
+          } else {
+            await this.users.updateOne({ _id: userId }, { $set: { verified: true } });
+          }
           resolve(true);
         }
       });
@@ -127,8 +151,6 @@ class UserService {
     return new Promise((resolve, reject) => {
       this.users.findOne({ _id: userId }, async (err, user) => {
         if (err || !user) {
-          console.log('user', user);
-          console.log('err', err);
           reject(false);
         } else {
           resolve(user.verified);
@@ -147,10 +169,55 @@ class UserService {
         await this.regTokens.deleteMany({ userId: userId });
         const registrationToken = new regTokenModel({
           userId: user._id,
-          token: this.generateRegistrationToken(),
+          token: this.generateValidationToken(),
           expiresAt: new Date(),
         });
-        await Promise.all([registrationToken.save(), EmailService.sendRegistrationEmail(user.email, user._id, this.generateRegistrationToken())]);
+        await Promise.all([registrationToken.save(), EmailService.sendRegistrationEmail(user.email, user._id, this.generateValidationToken())]);
+        resolve(true);
+      }
+    });
+  }
+
+  public async sendResetEmailVerification(email: string): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      await this.mongoService.connect();
+      const user = await this.users.findOne({ email });
+      if (!user) {
+        reject(false);
+      } else {
+        await this.regTokens.deleteMany({ userId: user._id });
+        const validationToken = new regTokenModel({
+          userId: user._id,
+          token: this.generateValidationToken(),
+          expiresAt: new Date(),
+        });
+        await validationToken.save();
+        await EmailService.sendResetEmail(email, user._id, validationToken.token);
+        resolve(true);
+      }
+    });
+  }
+
+  public verifyUserRequestByEmail(email: string): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      await this.mongoService.connect();
+      const user = await this.users.findOne({ email });
+      if (!user) {
+        reject(false);
+      }
+      resolve(user.allowResetPassword);
+    });
+  }
+
+  public async cancelResetPassword(email: string): Promise<boolean> {
+    return new Promise(async (resolve, reject) => {
+      await this.mongoService.connect();
+      const user = await this.users.findOne({ email });
+      if (!user) {
+        reject(false);
+      } else {
+        await this.regTokens.deleteMany({ userId: user._id });
+        await this.users.updateOne({ _id: user._id }, { $set: { allowResetPassword: false } });
         resolve(true);
       }
     });

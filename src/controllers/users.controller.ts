@@ -79,8 +79,79 @@ class UsersController {
   public resendVerificationEmail = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = String(req.params.id);
-      this.userService.resendEmailVerification(userId);
+      await this.userService.resendEmailVerification(userId);
       res.status(200).json({ message: 'Email sent' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public forgotPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const email = String(req.params.email);
+      await this.userService.sendResetEmailVerification(email);
+      res.status(200).json({ message: 'Email sent', notified: true });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public verifyResetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const userId = String(req.params.id);
+      const userRegistrationToken: string = req.params.token;
+      let isUserVerified = false;
+      if (userRegistrationToken) {
+        isUserVerified = await this.userService.verifyUser(userId, userRegistrationToken, true);
+      }
+      if (isUserVerified) {
+        res.status(200).json({ message: 'User verified', verified: true });
+      } else {
+        res.status(400).json({ message: 'User not verified', verified: false });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public verifyUserAllowResetPass = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const email = String(req.params.email);
+      const allowResetPass = await this.userService.verifyUserRequestByEmail(email);
+      if (allowResetPass) {
+        res.status(200).json({ message: 'User is allow to proceed', allowed: true });
+      } else {
+        res.status(401).json({ message: 'User is not allowed', allowed: false });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public cancelResetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const email = String(req.params.email);
+      const wasAbletoCancel = await this.userService.cancelResetPassword(email);
+      if (wasAbletoCancel) {
+        res.status(200).json({ message: 'Canceled', sucess: true });
+      } else {
+        res.status(401).json({ message: 'Invalid operation', success: false });
+      }
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public updatePassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const email = String(req.body.email);
+      const password = String(req.body.password);
+      const wasAbletoUpdate = await this.userService.updateUserPassword(email, password);
+      if (wasAbletoUpdate) {
+        res.status(200).json({ message: 'Updated', sucess: true });
+      } else {
+        res.status(401).json({ message: 'Invalid operation', success: false });
+      }
     } catch (error) {
       next(error);
     }
