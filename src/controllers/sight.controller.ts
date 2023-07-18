@@ -1,5 +1,5 @@
 import { CreateSightDto } from '@/dtos/sights.dto';
-import { Sight } from '@/interfaces/sight.interface';
+import { Sight, SightFormData } from '@/interfaces/sight.interface';
 import SightService from '@/services/sight.service';
 import { NextFunction, Request, Response } from 'express';
 
@@ -37,8 +37,8 @@ class SightController {
 
   public createSight = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const sightData: Sight = req.body;
-      const createSightData: Sight = await this.sightService.createSight(sightData);
+      const sightFormData: SightFormData = req.body;
+      const createSightData: Sight = await this.sightService.createSight(sightFormData);
       res.status(201).json({ data: createSightData, message: 'created' });
     } catch (error) {
       next(error);
@@ -61,6 +61,16 @@ class SightController {
       const sightId = String(req.params.sightId);
       const deleteSightData: Sight = await this.sightService.deleteSight(sightId);
       res.status(200).json({ data: deleteSightData, message: 'deleted', success: true });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public getImage = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const imageId = String(req.params.imageId);
+      const imagePath = await this.sightService.getSightImagePath(imageId);
+      res.status(200).contentType('image/jpeg').sendFile(imagePath, { root: '/' });
     } catch (error) {
       next(error);
     }

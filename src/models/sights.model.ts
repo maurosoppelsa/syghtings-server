@@ -8,7 +8,7 @@ const sightModelSchema = new Schema<Sight>(
     condition: { type: String, required: true },
     placeName: { type: String, required: true },
     animal: { type: String, required: true },
-    picture: { type: Object, required: true },
+    imageId: { type: String, required: true },
     location: { type: Object, required: true },
     description: { type: String, required: true },
     createdAt: { type: String, required: true },

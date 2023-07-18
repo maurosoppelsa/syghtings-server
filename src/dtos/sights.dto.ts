@@ -1,6 +1,6 @@
-import { IsString, NotEquals, ValidateIf, IsObject } from 'class-validator';
+import { IsString, NotEquals, ValidateIf, IsObject, IsOptional, ValidateNested } from 'class-validator';
 
-export class CreateSightDto {
+export class BaseSightDto {
   @IsString()
   @NotEquals(null)
   @ValidateIf((object, value) => value !== undefined)
@@ -26,11 +26,36 @@ export class CreateSightDto {
 
   @IsString()
   public description: string;
-  
+
   @IsString()
   public createdAt: string;
 
   @IsString()
   public userId: string;
+}
 
+export class UpdateSightDto extends BaseSightDto {
+  @IsOptional()
+  @IsString()
+  public imageId: string;
+
+  @IsOptional()
+  public sight: BaseSightDto | string;
+
+  @IsOptional()
+  @IsString()
+  public photo: Object;
+}
+
+export class CreateSightDto {
+  @IsString()
+  public sight: BaseSightDto;
+
+  @IsString()
+  public photo: Object;
+}
+
+export class GetSightImageDto {
+  @IsString()
+  public imageId: string;
 }

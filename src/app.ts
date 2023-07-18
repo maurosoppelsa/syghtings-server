@@ -11,6 +11,8 @@ import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+const fileUpload = require('express-fileupload');
+
 class App {
   public app: express.Application;
   public env: string;
@@ -49,6 +51,7 @@ class App {
     this.app.use(express.json());
     this.app.use(express.urlencoded({ extended: true }));
     this.app.use(cookieParser());
+    this.app.use(fileUpload());
   }
 
   private initializeRoutes(routes: Routes[]) {
@@ -77,5 +80,17 @@ class App {
     this.app.use(errorMiddleware);
   }
 }
+
+process.on('uncaughtException', error => {
+  console.error(`Uncaught Exception: ${error.stack}`);
+  // Do any cleanup here
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason: any, promise) => {
+  console.error(`Unhandled Rejection at: Promise ${promise}, reason: ${reason}`);
+  // Do any cleanup here
+  process.exit(1);
+});
 
 export default App;

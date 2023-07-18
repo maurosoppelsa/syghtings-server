@@ -4,11 +4,7 @@ export interface Sight {
   condition: string;
   placeName: string;
   animal: string;
-  picture: {
-    uri: string;
-    height: number;
-    width: number;
-  };
+  imageId: string;
   location: {
     latitude: string;
     longitude: string;
@@ -16,4 +12,8 @@ export interface Sight {
   description: string;
   createdAt: string;
   userId: string;
+}
+export interface SightFormData {
+  photo: string;
+  sight: string;
 }
