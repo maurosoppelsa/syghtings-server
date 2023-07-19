@@ -10,6 +10,7 @@ import path from 'path';
 class SightService {
   private sights = sightsModel;
   private mongoService = new MongoService();
+  private sightImageFolder = process.env.SIGHT_IMAGE_DIRECTORY || '../../sight-photos';
 
   public async findAllSights(): Promise<Sight[]> {
     await this.mongoService.connect();
@@ -113,13 +114,14 @@ class SightService {
   public async deleteSight(sightId: String): Promise<Sight> {
     await this.mongoService.connect();
     const findSight = await this.sights.findByIdAndRemove({ _id: sightId });
+    await this.deletePhoto(findSight.imageId);
     if (!findSight) throw new HttpException(409, 'Sight not found');
     return findSight;
   }
 
   public getSightImage = async (imageId: string): Promise<string | undefined> => {
     return new Promise((resolve, reject) => {
-      const imagePath = path.join(__dirname, '../../sight-photos', imageId);
+      const imagePath = path.join(__dirname, this.sightImageFolder, imageId);
       fs.readFile(imagePath, (error, data) => {
         if (error) {
           // Handle any error that occurred during file reading
@@ -133,15 +135,9 @@ class SightService {
   };
 
   public uploadPhoto = async (imageId: string, photoContent: any): Promise<void> => {
-    const filePath = path.join(__dirname, '../../sight-photos', imageId);
+    const filePath = path.join(__dirname, this.sightImageFolder, imageId);
     // Convert the photo content to a Buffer object
     const photoBuffer = Buffer.from(photoContent, 'base64');
-
-    if (fs.existsSync(filePath)) {
-      await fs.unlink(filePath, err => {
-        if (err) return console.log(err);
-      });
-    }
 
     await fs.writeFile(filePath, photoBuffer, (err: NodeJS.ErrnoException | null) => {
       if (err) {
@@ -151,8 +147,17 @@ class SightService {
     });
   };
 
+  public deletePhoto = async (imageId: string): Promise<void> => {
+    const filePath = path.join(__dirname, this.sightImageFolder, imageId);
+    await fs.unlink(filePath, (err: NodeJS.ErrnoException | null) => {
+      if (err) {
+        throw new Error('Failed to delete photo.');
+      }
+    });
+  };
+
   public getSightImagePath = (imageId: string): string => {
-    return path.join(__dirname, '../../sight-photos', imageId);
+    return path.join(__dirname, this.sightImageFolder, imageId);
   };
 }
 
