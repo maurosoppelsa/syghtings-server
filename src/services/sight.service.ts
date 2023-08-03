@@ -6,6 +6,7 @@ import MongoService from '@services/mongo-service';
 import { isEmpty } from '@utils/util';
 import { HttpException } from '@exceptions/HttpException';
 import path from 'path';
+import sharp from 'sharp';
 
 class SightService {
   private sights = sightsModel;
@@ -139,7 +140,12 @@ class SightService {
     // Convert the photo content to a Buffer object
     const photoBuffer = Buffer.from(photoContent, 'base64');
 
-    await fs.writeFile(filePath, photoBuffer, (err: NodeJS.ErrnoException | null) => {
+    // Resize and compress the image using sharp
+    const resizedBuffer = await sharp(photoBuffer)
+      .jpeg({ quality: 50, chromaSubsampling: '4:4:4' }) // Set desired JPEG quality (0-100)
+      .toBuffer();
+
+    fs.writeFile(filePath, resizedBuffer, (err: NodeJS.ErrnoException | null) => {
       if (err) {
         console.error(err);
         throw new Error('Failed to upload photo.');
