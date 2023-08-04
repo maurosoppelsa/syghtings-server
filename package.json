@@ -13,7 +13,10 @@
     "lint": "eslint --ignore-path .gitignore --ext .ts src/",
     "lint:fix": "npm run lint -- --fix",
     "deploy:prod": "npm run build && pm2 start ecosystem.config.js --only prod",
-    "deploy:dev": "pm2 start ecosystem.config.js --only dev"
+    "deploy:dev": "pm2 start ecosystem.config.js --only dev",
+    "docker:build": "DOCKER_BUILDKIT=1 docker build -f docker/Dockerfile -t syghtings-server .",
+    "docker:start": "docker-compose -f docker/docker-compose.yml up -d",
+    "docker:stop": "docker-compose -f docker/docker-compose.yml down"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

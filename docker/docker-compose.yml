@@ -1,0 +1,21 @@
+version: '3'
+services:
+  syghtings-server:
+    image: syghtings-server:latest
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      MONGO_URI: "mongodb://mongodb:27017/syghtings-db"
+      SIGHT_IMAGE_DIRECTORY: "../../sight-photos"
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongo
+    environment:
+      MONGO_INITDB_DATABASE: sygthings-db
+    ports:
+      - 27017:27017
+
