@@ -1,29 +1,21 @@
-# Common build stage
-FROM node:14.15.0-alpine3.12 as common-build-stage
+# Specify the base image with Node.js installed
+FROM node:lts-alpine as build
 
-RUN mkdir -p /home/node/app
-WORKDIR /home/node/app/
-COPY . /home/node/app/
+WORKDIR /app
 
-# Create 'sight-photos' directory for storing images
-RUN mkdir /home/node/app/sight-photos
+RUN mkdir /sight-photos
 
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+COPY . .
 
 RUN npm run build
 
+# Expose port 3000
 EXPOSE 3000
 
-# Development build stage
-FROM common-build-stage as development-build-stage
-
-ENV NODE_ENV development
-
-CMD ["npm", "run", "dev"]
-
-# Production build stage
-FROM common-build-stage as production-build-stage
-
-ENV NODE_ENV production
-
-CMD ["npm", "run", "start"]
+# Start the Node.js application
+CMD ["npm", "start"]
