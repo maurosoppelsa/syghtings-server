@@ -10,6 +10,8 @@ RUN mkdir /home/node/app/sight-photos
 
 RUN npm install
 
+RUN npm run build
+
 EXPOSE 3000
 
 # Development build stage
