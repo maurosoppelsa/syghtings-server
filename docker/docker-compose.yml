@@ -10,6 +10,7 @@ services:
     environment:
       MONGO_URI: "mongodb://mongodb:27017/syghtings-db"
       SIGHT_IMAGE_DIRECTORY: "../../sight-photos"
+      LOG_DIR: "/../../logs"
     depends_on:
       - mongodb
   mongodb:
