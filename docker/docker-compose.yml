@@ -1,7 +1,7 @@
 version: '3'
 services:
   syghtings-server:
-    image: syghtings-server:latest
+    image: ghcr.io/maurosoppelsa/syghtings-server:latest
     build:
       context: ../
       dockerfile: ./docker/Dockerfile
@@ -11,6 +11,7 @@ services:
       MONGO_URI: "mongodb://mongodb:27017/syghtings-db"
       SIGHT_IMAGE_DIRECTORY: "../../sight-photos"
       LOG_DIR: "/../../logs"
+      PORT: 3000
     depends_on:
       - mongodb
   mongodb:
