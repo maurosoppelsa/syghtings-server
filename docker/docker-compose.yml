@@ -1,7 +1,7 @@
 version: '3'
 services:
   syghtings-server:
-    image: ghcr.io/maurosoppelsa/syghtings-server:latest
+    image: syghtings-server:latest
     build:
       context: ../
       dockerfile: ./docker/Dockerfile
@@ -20,4 +20,6 @@ services:
       MONGO_INITDB_DATABASE: sygthings-db
     ports:
       - 27017:27017
+    volumes: 
+      - ~/projects/syghtings-server/mongo/data:/data/db
 
