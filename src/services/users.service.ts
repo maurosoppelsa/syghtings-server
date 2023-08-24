@@ -13,6 +13,7 @@ class UserService {
   private users = userModel;
   private regTokens = regTokenModel;
   private mongoService = new MongoService();
+  private emailService = new EmailService();
 
   private generateValidationToken(): string {
     const jwtSecret = 'mysecretstring';
@@ -64,7 +65,7 @@ class UserService {
       expiresAt: new Date(),
     });
 
-    await Promise.all([registrationToken.save(), EmailService.sendRegistrationEmail(userData.email, user._id, this.generateValidationToken())]);
+    await Promise.all([registrationToken.save(), this.emailService.sendRegistrationEmail(userData.email, user._id, this.generateValidationToken())]);
     createUserData.id = user._id.toString();
     return createUserData;
   }
@@ -172,7 +173,7 @@ class UserService {
           token: this.generateValidationToken(),
           expiresAt: new Date(),
         });
-        await Promise.all([registrationToken.save(), EmailService.sendRegistrationEmail(user.email, user._id, this.generateValidationToken())]);
+        await Promise.all([registrationToken.save(), this.emailService.sendRegistrationEmail(user.email, user._id, this.generateValidationToken())]);
         resolve(true);
       }
     });
@@ -192,7 +193,7 @@ class UserService {
           expiresAt: new Date(),
         });
         await validationToken.save();
-        await EmailService.sendResetEmail(email, user._id, validationToken.token);
+        await this.emailService.sendResetEmail(email, user._id, validationToken.token);
         resolve(true);
       }
     });
