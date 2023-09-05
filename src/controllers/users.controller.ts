@@ -59,10 +59,10 @@ class UsersController {
   public verifyUserRegistration = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = String(req.params.id);
-      const userRegistrationToken: string = req.params.token;
+      const userRegistrationCode: number = parseInt(req.params.code);
       let isUserVerified = false;
-      if (userRegistrationToken) {
-        isUserVerified = await this.userService.verifyUser(userId, userRegistrationToken);
+      if (userRegistrationCode) {
+        isUserVerified = await this.userService.verifyUser(userId, userRegistrationCode);
       } else {
         isUserVerified = await this.userService.checkUserRegistration(userId);
       }
@@ -72,6 +72,7 @@ class UsersController {
         res.status(400).json({ message: 'User not verified', verified: false });
       }
     } catch (error) {
+      console.log(error);
       next(error);
     }
   };
@@ -96,28 +97,11 @@ class UsersController {
     }
   };
 
-  public verifyResetPassword = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const userId = String(req.params.id);
-      const userRegistrationToken: string = req.params.token;
-      let isUserVerified = false;
-      if (userRegistrationToken) {
-        isUserVerified = await this.userService.verifyUser(userId, userRegistrationToken, true);
-      }
-      if (isUserVerified) {
-        res.status(200).json({ message: 'User verified', verified: true });
-      } else {
-        res.status(400).json({ message: 'User not verified', verified: false });
-      }
-    } catch (error) {
-      next(error);
-    }
-  };
-
   public verifyUserAllowResetPass = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const email = String(req.params.email);
-      const allowResetPass = await this.userService.verifyUserRequestByEmail(email);
+      const userRegistrationCode: number = parseInt(req.params.code);
+      const allowResetPass = await this.userService.verifyUserRequestByEmail(email, userRegistrationCode);
       if (allowResetPass) {
         res.status(200).json({ message: 'User is allow to proceed', allowed: true });
       } else {

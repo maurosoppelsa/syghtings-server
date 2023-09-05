@@ -10,9 +10,9 @@ export interface TokenData {
   expiresIn: number;
 }
 
-export interface RegistrationToken {
+export interface RegistrationCode {
   userId: string;
-  token: string;
+  code: number;
   expiresAt: Date;
 }
 

@@ -6,23 +6,23 @@ import userModel from '@models/users.model';
 import { isEmpty } from '@utils/util';
 import MongoService from '@services/mongo-service';
 import * as bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
 import EmailService from './email.service';
-import regTokenModel from '@/models/reg-token.model';
+import regCodeModel from '@/models/reg-code.model';
 class UserService {
   private users = userModel;
-  private regTokens = regTokenModel;
+  private regCodes = regCodeModel;
   private mongoService = new MongoService();
   private emailService = new EmailService();
 
-  private generateValidationToken(): string {
-    const jwtSecret = 'mysecretstring';
-    const jwtExpirationTime = '1h';
-    const payload = {
-      type: 'registration',
-    };
-    const token = jwt.sign(payload, jwtSecret, { expiresIn: jwtExpirationTime });
-    return token;
+  private generateValidationCode(): string {
+    const codeLength = 6;
+    let validationCode = '';
+
+    for (let i = 0; i < codeLength; i++) {
+      const randomDigit = Math.floor(Math.random() * 10);
+      validationCode += randomDigit.toString();
+    }
+    return validationCode;
   }
 
   public async findAllUser(): Promise<User[]> {
@@ -59,13 +59,15 @@ class UserService {
       }
     });
 
-    const registrationToken = new regTokenModel({
+    const validationCode = this.generateValidationCode();
+
+    const registrationCode = new regCodeModel({
       userId: user._id,
-      token: this.generateValidationToken(),
+      code: validationCode,
       expiresAt: new Date(),
     });
 
-    await Promise.all([registrationToken.save(), this.emailService.sendRegistrationEmail(userData.email, user._id, this.generateValidationToken())]);
+    await Promise.all([registrationCode.save(), this.emailService.sendRegistrationEmail(userData.email, validationCode)]);
     createUserData.id = user._id.toString();
     return createUserData;
   }
@@ -128,19 +130,15 @@ class UserService {
     return findUser;
   }
 
-  public async verifyUser(userId: String, token: String, allowResetPass = false): Promise<boolean> {
+  public async verifyUser(userId: String, code: number): Promise<boolean> {
     await this.mongoService.connect();
     return new Promise((resolve, reject) => {
-      this.regTokens.findOne({ userId: userId, token: token }, async (err, token) => {
-        if (err || !token) {
-          reject(false);
+      this.regCodes.findOne({ userId: userId, code: code }, async (err, code) => {
+        if (err || !code) {
+          reject("Code doesn't match");
         } else {
-          await this.regTokens.deleteMany({ userId: userId });
-          if (allowResetPass) {
-            await this.users.updateOne({ _id: userId }, { $set: { allowResetPassword: true } });
-          } else {
-            await this.users.updateOne({ _id: userId }, { $set: { verified: true } });
-          }
+          await this.regCodes.deleteMany({ userId: userId });
+          await this.users.updateOne({ _id: userId }, { $set: { verified: true } });
           resolve(true);
         }
       });
@@ -167,13 +165,14 @@ class UserService {
       if (!user) {
         reject(false);
       } else {
-        await this.regTokens.deleteMany({ userId: userId });
-        const registrationToken = new regTokenModel({
+        await this.regCodes.deleteMany({ userId: userId });
+        const validationCode = this.generateValidationCode();
+        const registrationCode = new regCodeModel({
           userId: user._id,
-          token: this.generateValidationToken(),
+          code: validationCode,
           expiresAt: new Date(),
         });
-        await Promise.all([registrationToken.save(), this.emailService.sendRegistrationEmail(user.email, user._id, this.generateValidationToken())]);
+        await Promise.all([registrationCode.save(), this.emailService.sendRegistrationEmail(user.email, validationCode)]);
         resolve(true);
       }
     });
@@ -186,27 +185,30 @@ class UserService {
       if (!user) {
         reject(false);
       } else {
-        await this.regTokens.deleteMany({ userId: user._id });
-        const validationToken = new regTokenModel({
+        await this.regCodes.deleteMany({ userId: user._id });
+        const validationCode = new regCodeModel({
           userId: user._id,
-          token: this.generateValidationToken(),
+          code: this.generateValidationCode(),
           expiresAt: new Date(),
         });
-        await validationToken.save();
-        await this.emailService.sendResetEmail(email, user._id, validationToken.token);
+        await validationCode.save();
+        await this.emailService.sendResetEmail(email, validationCode.code);
         resolve(true);
       }
     });
   }
 
-  public verifyUserRequestByEmail(email: string): Promise<boolean> {
+  public verifyUserRequestByEmail(email: string, code: number): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       await this.mongoService.connect();
-      const user = await this.users.findOne({ email });
-      if (!user) {
-        reject(false);
-      }
-      resolve(user.allowResetPassword);
+      this.users.findOne({ email }, async (err, user) => {
+        if (err || !user) {
+          reject(false);
+        } else {
+          await this.users.updateOne({ email: email }, { $set: { allowResetPassword: true } });
+          resolve(await this.verifyUser(user.id, code));
+        }
+      });
     });
   }
 
@@ -217,7 +219,7 @@ class UserService {
       if (!user) {
         reject(false);
       } else {
-        await this.regTokens.deleteMany({ userId: user._id });
+        await this.regCodes.deleteMany({ userId: user._id });
         await this.users.updateOne({ _id: user._id }, { $set: { allowResetPassword: false } });
         resolve(true);
       }

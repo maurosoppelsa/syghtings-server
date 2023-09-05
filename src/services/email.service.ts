@@ -9,39 +9,41 @@ class EmailService {
       port: 465,
       secure: true,
       auth: {
-        user: process.env.SERVER_EMAIL_ACCOUNT,
-        pass: process.env.SERVER_EMAIL_PASSWORD,
+        user: 'l.mauro.soppelsa@gmail.com',
+        pass: 'lsfsuorlyohemhng',
       },
     });
   }
 
-  public async sendRegistrationEmail(email, userId, token) {
+  public async sendRegistrationEmail(email, code) {
     const mailOptions = {
-      from: process.env.SERVER_EMAIL_ACCOUNT,
+      from: 'l.mauro.soppelsa@gmail.com',
       to: email,
       subject: 'Registration Email',
-      text: `Click the link to verify your account: http://localhost:3000/users/verify/${userId}/${token}`,
+      text: `this is you code: ${code}`,
     };
 
     try {
-      await this.transporter.sendMail(mailOptions);
+      //await this.transporter.sendMail(mailOptions);
+      console.log(`email code: ${code}`);
       console.log(`Registration email sent to ${email}`);
     } catch (error) {
       console.error('Error sending registration email:', error);
     }
   }
 
-  public async sendResetEmail(email, userId, token) {
+  public async sendResetEmail(email, code) {
     const mailOptions = {
-      from: process.env.SERVER_EMAIL_ACCOUNT,
+      from: 'l.mauro.soppelsa@gmail.com',
       to: email,
       subject: 'Password Reset Email',
-      text: `Click the link to reset your password: http://localhost:3000/users/auth-reset-password/${userId}/${token}`,
+      text: `this is you code: ${code}`,
     };
 
     try {
-      await this.transporter.sendMail(mailOptions);
+      //await this.transporter.sendMail(mailOptions);
       console.log(`Reset email sent to ${email}`);
+      console.log(`email code: ${code}`);
     } catch (error) {
       console.error('Error sending reset email:', error);
     }

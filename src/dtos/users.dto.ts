@@ -1,4 +1,4 @@
-import { IsEmail, IsString, NotEquals, ValidateIf } from 'class-validator';
+import { IsEmail, IsNumberString, IsOptional, IsString, Length, NotEquals, ValidateIf } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
@@ -72,13 +72,12 @@ export class LoginUserDto {
 
 export class VerifyUserDto {
   @IsString()
-  @NotEquals(null)
   public id: string;
 
-  @IsString()
-  @NotEquals(null)
-  @ValidateIf((object, value) => value !== undefined)
-  public token?: string;
+  @IsOptional()
+  @IsNumberString()
+  @Length(6, 6)
+  public code?: number;
 }
 
 export class ResendVerificationEmailDto {
@@ -91,6 +90,11 @@ export class ForgotPasswordDto {
   @IsString()
   @NotEquals(null)
   public email: string;
+
+  @IsOptional()
+  @IsNumberString()
+  @Length(6, 6)
+  public code?: number;
 }
 
 export class UpdatePasswordDto {

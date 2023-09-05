@@ -20,7 +20,7 @@ class UsersRoute implements Routes {
 
     this.router.get(`${this.path}`, authMiddleware, this.usersController.getUsers);
     this.router.get(`${this.path}/:id`, authMiddleware, this.usersController.getUserById);
-    this.router.get(`${this.path}/verify/:id/:token?`, validationMiddleware(VerifyUserDto, 'params'), this.usersController.verifyUserRegistration);
+    this.router.get(`${this.path}/verify/:id/:code?`, validationMiddleware(VerifyUserDto, 'params'), this.usersController.verifyUserRegistration);
     this.router.post(`${this.path}`, validationMiddleware(CreateUserDto, 'body'), this.usersController.createUser);
     this.router.put(`${this.path}/:id`, authMiddleware, validationMiddleware(UpdateUserDto, 'body', true), this.usersController.updateUser);
     this.router.delete(`${this.path}/:id`, authMiddleware, this.usersController.deleteUser);
@@ -31,12 +31,7 @@ class UsersRoute implements Routes {
     );
     this.router.get(`${this.path}/forgot-password/:email`, validationMiddleware(ForgotPasswordDto, 'params'), this.usersController.forgotPassword);
     this.router.get(
-      `${this.path}/auth-reset-password/:id/:token?`,
-      validationMiddleware(VerifyUserDto, 'params'),
-      this.usersController.verifyResetPassword,
-    );
-    this.router.get(
-      `${this.path}/auth-verify-allow-reset/:email`,
+      `${this.path}/auth-verify-allow-reset/:email/:code?`,
       validationMiddleware(ForgotPasswordDto, 'params'),
       this.usersController.verifyUserAllowResetPass,
     );
