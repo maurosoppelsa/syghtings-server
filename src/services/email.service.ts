@@ -9,24 +9,22 @@ class EmailService {
       port: 465,
       secure: true,
       auth: {
-        user: 'l.mauro.soppelsa@gmail.com',
-        pass: 'lsfsuorlyohemhng',
+        user: process.env.SERVER_EMAIL_ACCOUNT,
+        pass: process.env.SERVER_EMAIL_PASSWORD,
       },
     });
   }
 
   public async sendRegistrationEmail(email, code) {
     const mailOptions = {
-      from: 'l.mauro.soppelsa@gmail.com',
+      from: process.env.SERVER_EMAIL_ACCOUNT,
       to: email,
       subject: 'Registration Email',
       text: `this is you code: ${code}`,
     };
 
     try {
-      //await this.transporter.sendMail(mailOptions);
-      console.log(`email code: ${code}`);
-      console.log(`Registration email sent to ${email}`);
+      await this.transporter.sendMail(mailOptions);
     } catch (error) {
       console.error('Error sending registration email:', error);
     }
@@ -34,16 +32,14 @@ class EmailService {
 
   public async sendResetEmail(email, code) {
     const mailOptions = {
-      from: 'l.mauro.soppelsa@gmail.com',
+      from: process.env.SERVER_EMAIL_ACCOUNT,
       to: email,
       subject: 'Password Reset Email',
       text: `this is you code: ${code}`,
     };
 
     try {
-      //await this.transporter.sendMail(mailOptions);
-      console.log(`Reset email sent to ${email}`);
-      console.log(`email code: ${code}`);
+      await this.transporter.sendMail(mailOptions);
     } catch (error) {
       console.error('Error sending reset email:', error);
     }
