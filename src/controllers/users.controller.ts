@@ -132,7 +132,7 @@ class UsersController {
       const password = String(req.body.password);
       const wasAbletoUpdate = await this.userService.updateUserPassword(email, password);
       if (wasAbletoUpdate) {
-        res.status(200).json({ message: 'Updated', sucess: true });
+        res.status(200).json({ message: 'Updated', success: true });
       } else {
         res.status(401).json({ message: 'Invalid operation', success: false });
       }
