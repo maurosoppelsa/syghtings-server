@@ -21,7 +21,7 @@ class SightsRoute implements Routes {
     this.router.post(`${this.path}`, authMiddleware, validationMiddleware(CreateSightDto, 'body', true), this.sightController.createSight);
     this.router.put(`${this.path}/:sightId`, authMiddleware, validationMiddleware(UpdateSightDto, 'body', true), this.sightController.updateSight);
     this.router.delete(`${this.path}/:sightId`, authMiddleware, this.sightController.deleteSight);
-    this.router.get(`${this.path}/image/:imageId`, authMiddleware, validationMiddleware(GetSightImageDto, 'params'), this.sightController.getImage);
+    this.router.get(`${this.path}/image/:imageId`, validationMiddleware(GetSightImageDto, 'params'), this.sightController.getImage);
   }
 }
 
