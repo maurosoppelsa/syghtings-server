@@ -11,6 +11,8 @@ import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
+import JobSubscriptionService from './services/job-subrciption-service';
+
 const fileUpload = require('express-fileupload');
 
 class App {
@@ -27,6 +29,7 @@ class App {
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
+    this.initializeSubriptionChecker();
   }
 
   public listen() {
@@ -78,6 +81,10 @@ class App {
 
   private initializeErrorHandling() {
     this.app.use(errorMiddleware);
+  }
+
+  private initializeSubriptionChecker() {
+    JobSubscriptionService.startCheck();
   }
 }
 

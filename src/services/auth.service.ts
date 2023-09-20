@@ -15,10 +15,14 @@ class AuthService {
 
   public async login(userData: LoginUserDto): Promise<User> {
     await this.mongoService.connect();
+
     if (isEmpty(userData)) throw new HttpException(400, "You're not userData");
 
     const findUser = await this.users.findOne({ email: userData.email });
+
     if (!findUser) throw new HttpException(409, `User not found`);
+
+    if (!findUser.verified) throw new HttpException(403, `User not verified`);
 
     const isPasswordMatching: boolean = await compare(userData.password, findUser.password);
     if (!isPasswordMatching) throw new HttpException(409, "You're password not matching");
@@ -28,9 +32,12 @@ class AuthService {
   public createToken(user: User): TokenData {
     const dataStoredInToken: DataStoredInToken = { id: user.id };
     const secretKey: string = SECRET_KEY;
-    const expiresIn: number = 24 * 60 * 60;
+    // token expires in 14 days
+    const expiresIn = 1209600;
+    const now: number = Math.floor(Date.now() / 1000);
+    const expiresAt: number = now + expiresIn;
 
-    return { expiresIn, token: sign(dataStoredInToken, secretKey, { expiresIn }) };
+    return { expiresIn: expiresAt, token: sign(dataStoredInToken, secretKey, { expiresIn }) };
   }
 }
 

@@ -7,4 +7,5 @@ export interface User {
   occupation: string;
   verified: boolean;
   allowResetPassword: boolean;
+  createdAt: Date;
 }

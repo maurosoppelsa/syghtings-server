@@ -11,8 +11,11 @@ class AuthController {
       const userData: CreateUserDto = req.body;
       const findUser = await this.authService.login(userData);
       const tokenData = this.authService.createToken(findUser);
-      res.status(200).json({ token: tokenData.token, user: findUser, success: true });
+      res.status(200).json({ sessionToken: { token: tokenData.token, expiresIn: tokenData.expiresIn }, user: findUser, success: true });
     } catch (error) {
+      if (error.status === 403) {
+        res.status(403).json({ message: error.message, success: false, verified: false });
+      }
       next(error);
     }
   };

@@ -8,6 +8,7 @@ import MongoService from '@services/mongo-service';
 import * as bcrypt from 'bcrypt';
 import EmailService from './email.service';
 import regCodeModel from '@/models/reg-code.model';
+import { logger } from '@/utils/logger';
 class UserService {
   private users = userModel;
   private regCodes = regCodeModel;
@@ -69,6 +70,7 @@ class UserService {
 
     await Promise.all([registrationCode.save(), this.emailService.sendRegistrationEmail(userData.email, validationCode)]);
     createUserData.id = user._id.toString();
+    createUserData.verified = false;
     return createUserData;
   }
 
@@ -118,7 +120,7 @@ class UserService {
       await this.users.updateOne({ email }, { $set: { allowResetPassword: false, password: newPassword } });
       return true;
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       return false;
     }
   }
@@ -134,8 +136,11 @@ class UserService {
     await this.mongoService.connect();
     return new Promise((resolve, reject) => {
       this.regCodes.findOne({ userId: userId, code: code }, async (err, code) => {
-        if (err || !code) {
-          reject("Code doesn't match");
+        if (err) {
+          reject(err);
+        }
+        if (!code) {
+          resolve(false);
         } else {
           await this.regCodes.deleteMany({ userId: userId });
           await this.users.updateOne({ _id: userId }, { $set: { verified: true } });
@@ -222,6 +227,19 @@ class UserService {
         await this.regCodes.deleteMany({ userId: user._id });
         await this.users.updateOne({ _id: user._id }, { $set: { allowResetPassword: false } });
         resolve(true);
+      }
+    });
+  }
+
+  public async cleanupSubscriptions(): Promise<void> {
+    await this.mongoService.connect();
+    await this.users.find({ verified: false }, async (err, users) => {
+      if (err) {
+        logger.error(err);
+      } else {
+        for (const user of users) {
+          await this.users.deleteOne({ _id: user._id });
+        }
       }
     });
   }

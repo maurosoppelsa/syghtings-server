@@ -11,6 +11,7 @@ const userModelSchema = new Schema<User>(
     occupation: { type: String, required: true },
     verified: { type: Boolean, required: true, default: false },
     allowResetPassword: { type: Boolean, required: true, default: false },
+    createdAt: { type: Date, default: Date.now },
   },
   {
     toJSON: {
