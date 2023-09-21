@@ -178,7 +178,7 @@ class UserService {
           code: validationCode,
           expiresAt: new Date(),
         });
-        await Promise.all([registrationCode.save(), this.emailService.sendVerifyEmail(user.email, validationCode, EmailTypes.REGISTRATION)]);
+        await Promise.all([registrationCode.save(), this.emailService.sendVerifyEmail(user.email, validationCode, EmailTypes.RESEND)]);
         resolve(true);
       }
     });
