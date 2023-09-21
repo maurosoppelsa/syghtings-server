@@ -5,7 +5,7 @@ export const CREDENTIALS = process.env.CREDENTIALS === 'true';
 export const { NODE_ENV, PORT, SECRET_KEY, LOG_FORMAT, LOG_DIR, ORIGIN, SERVER_EMAIL_ACCOUNT, SERVER_EMAIL_PASSWORD } = process.env;
 
 // token expires in 14 days
-export const TOKEN_EXPIRATION_TIME = process.env.TOKEN_EXPIRATION_TIME || 1209600;
+export const TOKEN_EXPIRATION_TIME = 1209600;
 
 export const MONGO_URI = process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/sygthings-db';
 
