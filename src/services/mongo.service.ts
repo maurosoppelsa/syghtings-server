@@ -1,10 +1,11 @@
+import { MONGO_URI } from '@/config';
+import { logger } from '@/utils/logger';
 import mongoose from 'mongoose';
 
 class MongoService {
   public async connect() {
-    //TODO hanlde environment URI
     //TODO configure setTimeOut connection
-    await mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/sygthings-db', {
+    await mongoose.connect(MONGO_URI, {
       socketTimeoutMS: 100,
     });
   }
@@ -15,7 +16,7 @@ class MongoService {
 }
 
 mongoose.connection.on('error', err => {
-  console.log(`The server couldn't stablish the connection database`, err);
+  logger.error(`The server couldn't stablish the connection database`, err);
 });
 
 export default MongoService;

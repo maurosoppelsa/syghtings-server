@@ -11,7 +11,7 @@ import { NODE_ENV, PORT, LOG_FORMAT, ORIGIN, CREDENTIALS } from '@config';
 import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
-import JobSubscriptionService from './services/job-subrciption-service';
+import JobSubscriptionService from './services/job-subrciption.service';
 
 const fileUpload = require('express-fileupload');
 
@@ -89,13 +89,13 @@ class App {
 }
 
 process.on('uncaughtException', error => {
-  console.error(`Uncaught Exception: ${error.stack}`);
+  logger.error(`Uncaught Exception: ${error.stack}`);
   // Do any cleanup here
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason: any, promise) => {
-  console.error(`Unhandled Rejection at: Promise ${promise}, reason: ${reason}`);
+  logger.error(`Unhandled Rejection at: Promise ${promise}, reason: ${reason}`);
   // Do any cleanup here
   process.exit(1);
 });

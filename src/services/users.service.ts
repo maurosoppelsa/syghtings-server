@@ -4,11 +4,12 @@ import { HttpException } from '@exceptions/HttpException';
 import { User } from '@interfaces/users.interface';
 import userModel from '@models/users.model';
 import { isEmpty } from '@utils/util';
-import MongoService from '@services/mongo-service';
+import MongoService from '@services/mongo.service';
 import * as bcrypt from 'bcrypt';
-import EmailService from './email.service';
+import EmailService from '@services/email.service';
 import regCodeModel from '@/models/reg-code.model';
 import { logger } from '@/utils/logger';
+import { EmailTypes } from '@/constants';
 class UserService {
   private users = userModel;
   private regCodes = regCodeModel;
@@ -68,7 +69,7 @@ class UserService {
       expiresAt: new Date(),
     });
 
-    await Promise.all([registrationCode.save(), this.emailService.sendRegistrationEmail(userData.email, validationCode)]);
+    await Promise.all([registrationCode.save(), this.emailService.sendVerifyEmail(userData.email, validationCode, EmailTypes.REGISTRATION)]);
     createUserData.id = user._id.toString();
     createUserData.verified = false;
     return createUserData;
@@ -177,7 +178,7 @@ class UserService {
           code: validationCode,
           expiresAt: new Date(),
         });
-        await Promise.all([registrationCode.save(), this.emailService.sendRegistrationEmail(user.email, validationCode)]);
+        await Promise.all([registrationCode.save(), this.emailService.sendVerifyEmail(user.email, validationCode, EmailTypes.REGISTRATION)]);
         resolve(true);
       }
     });
@@ -197,7 +198,7 @@ class UserService {
           expiresAt: new Date(),
         });
         await validationCode.save();
-        await this.emailService.sendResetEmail(email, validationCode.code);
+        await this.emailService.sendVerifyEmail(email, validationCode.code.toString(), EmailTypes.RESET_PASSWORD);
         resolve(true);
       }
     });

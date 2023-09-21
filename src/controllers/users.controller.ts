@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { CreateUserDto } from '@dtos/users.dto';
 import { User } from '@interfaces/users.interface';
 import userService from '@services/users.service';
+import { logger } from '@/utils/logger';
 
 class UsersController {
   public userService = new userService();
@@ -72,7 +73,7 @@ class UsersController {
         res.status(400).json({ message: 'User not verified', verified: false });
       }
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       next(error);
     }
   };

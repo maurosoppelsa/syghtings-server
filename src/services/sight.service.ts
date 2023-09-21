@@ -2,11 +2,12 @@ import * as fs from 'fs';
 import * as shortid from 'shortid';
 import { Sight, SightFormData } from '@/interfaces/sight.interface';
 import sightsModel from '@/models/sights.model';
-import MongoService from '@services/mongo-service';
+import MongoService from '@services/mongo.service';
 import { isEmpty } from '@utils/util';
 import { HttpException } from '@exceptions/HttpException';
 import path from 'path';
 import sharp from 'sharp';
+import { logger } from '@/utils/logger';
 
 class SightService {
   private sights = sightsModel;
@@ -147,7 +148,7 @@ class SightService {
 
     fs.writeFile(filePath, resizedBuffer, (err: NodeJS.ErrnoException | null) => {
       if (err) {
-        console.error(err);
+        logger.error(err);
         throw new Error('Failed to upload photo.');
       }
     });
