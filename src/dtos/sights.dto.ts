@@ -7,6 +7,7 @@ export class BaseSightDto {
   public id?: string;
 
   @IsString()
+  @IsOptional()
   public province: string;
 
   @IsString()

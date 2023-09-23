@@ -4,7 +4,7 @@ import { Sight } from '@/interfaces/sight.interface';
 
 const sightModelSchema = new Schema<Sight>(
   {
-    province: { type: String, required: true },
+    province: { type: String },
     condition: { type: String, required: true },
     placeName: { type: String, required: true },
     animal: { type: String, required: true },
