@@ -148,8 +148,7 @@ class SightService {
 
     fs.writeFile(filePath, resizedBuffer, (err: NodeJS.ErrnoException | null) => {
       if (err) {
-        logger.error(err);
-        throw new Error('Failed to upload photo.');
+        logger.error('Error saving photo: ', err);
       }
     });
   };
@@ -158,7 +157,7 @@ class SightService {
     const filePath = path.join(__dirname, this.sightImageFolder, imageId);
     await fs.unlink(filePath, (err: NodeJS.ErrnoException | null) => {
       if (err) {
-        throw new Error('Failed to delete photo.');
+        logger.error('Error deleting photo: ', err);
       }
     });
   };

@@ -14,6 +14,8 @@ services:
       PORT: 3000
     depends_on:
       - mongodb
+    volumes:
+      - ~/projects/syghtings-server/sight-photos:/home/node/app/sight-photos
   mongodb:
     image: mongo
     environment:

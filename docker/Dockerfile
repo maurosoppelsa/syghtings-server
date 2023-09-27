@@ -5,9 +5,6 @@ RUN mkdir -p /home/node/app
 WORKDIR /home/node/app/
 COPY . /home/node/app/
 
-# Create 'sight-photos' directory for storing images
-RUN mkdir /home/node/app/sight-photos
-
 RUN npm install
 
 EXPOSE 3000

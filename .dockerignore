@@ -19,3 +19,5 @@ docker-compose.yml
 
 # others
 /sight-photos
+/mongo/data
+
