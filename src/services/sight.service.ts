@@ -73,6 +73,7 @@ class SightService {
     const imageId = shortid.generate();
     await this.mongoService.connect();
     if (isEmpty(sightData)) throw new HttpException(400, 'Wrong sight data');
+    await this.uploadPhoto(imageId, photo);
     const createSightData: Sight = { ...sightData };
     const sight = new sightsModel({
       province: sightData.province,
@@ -86,7 +87,6 @@ class SightService {
       imageId: imageId,
     });
     const savedSight = await sight.save();
-    await this.uploadPhoto(imageId, photo);
     createSightData.id = savedSight._id.toString();
     createSightData.imageId = imageId;
     return createSightData;
