@@ -5,7 +5,7 @@ export enum EmailTypes {
 }
 
 export enum EMAIL_SUBJECTS {
-  registration = 'Registration Email',
-  reset = 'Password Reset Email',
-  resend = 'Resend Code Verification Email',
+  registration = 'Registrar Nuevo Usuario',
+  reset = 'Actualizar contraseña',
+  resend = 'Reenviar código de verificación',
 }
