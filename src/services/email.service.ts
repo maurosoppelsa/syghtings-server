@@ -1,9 +1,10 @@
 import fs from 'fs';
-import { SERVER_EMAIL_ACCOUNT, SERVER_EMAIL_HOST, SERVER_EMAIL_PASSWORD, SERVER_EMAIL_PORT } from '@/config';
+import { EMAIL_REPORT_TEXT, SERVER_EMAIL_ACCOUNT, SERVER_EMAIL_HOST, SERVER_EMAIL_PASSWORD, SERVER_EMAIL_PORT } from '@/config';
 import { logger } from '@/utils/logger';
 import nodemailer from 'nodemailer';
 import { EmailType } from '@/interfaces/email.interface';
 import { EMAIL_SUBJECTS, EmailTypes } from '@/constants';
+import { Readable } from 'node:stream';
 
 class EmailService {
   private transporter;
@@ -51,6 +52,35 @@ class EmailService {
       await this.transporter.sendMail(mailOptions);
     } catch (error) {
       logger.error('Error sending reset email:', error);
+    }
+  }
+
+  public async sendSightsDbReport(csvContent: string, filename: string) {
+    const type: EmailType = EmailTypes.REPORT as EmailType;
+    const mailOptions = {
+      from: SERVER_EMAIL_ACCOUNT,
+      to: SERVER_EMAIL_ACCOUNT,
+      subject: this.getSubject(type),
+      text: EMAIL_REPORT_TEXT,
+      attachments: [
+        {
+          filename: filename,
+          content: new Readable({
+            read() {
+              this.push(csvContent);
+              this.push(null);
+            },
+          }),
+          contentType: 'text/csv',
+        },
+      ],
+    };
+
+    try {
+      await this.transporter.sendMail(mailOptions);
+      logger.info('Internal email with CSV attachment sent successfully.');
+    } catch (error) {
+      logger.error('Error sending internal email with CSV attachment:', error);
     }
   }
 }

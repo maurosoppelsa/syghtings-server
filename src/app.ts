@@ -12,6 +12,7 @@ import { Routes } from '@interfaces/routes.interface';
 import errorMiddleware from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
 import JobSubscriptionService from './services/job-subrciption.service';
+import { JobExportDataService } from './services/export-data.service';
 
 const fileUpload = require('express-fileupload');
 
@@ -29,7 +30,7 @@ class App {
     this.initializeRoutes(routes);
     this.initializeSwagger();
     this.initializeErrorHandling();
-    this.initializeSubriptionChecker();
+    this.initializeCronJobs();
   }
 
   public listen() {
@@ -83,8 +84,9 @@ class App {
     this.app.use(errorMiddleware);
   }
 
-  private initializeSubriptionChecker() {
+  private initializeCronJobs() {
     JobSubscriptionService.startCheck();
+    JobExportDataService.startExport();
   }
 }
 

@@ -17,3 +17,11 @@ export const isEmpty = (value: string | number | object): boolean => {
     return false;
   }
 };
+
+export function getFormattedDate(): string {
+  const date = new Date();
+  const year = date.getFullYear().toString();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0'); // January is 0!
+  const day = date.getDate().toString().padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}

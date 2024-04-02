@@ -13,3 +13,8 @@ export const SERVER_EMAIL_HOST = process.env.SERVER_EMAIL_HOST || 'smtp.gmail.co
 export const SERVER_EMAIL_PORT = process.env.SERVER_EMAIL_PORT || 465;
 
 export const CRON_JOB_CLEANUP_TIME = process.env.CRON_JOB_TIME || '0 0 */24 * * *'; // runs every 24 hours
+
+export const CRON_JOB_EXPORT_REPORT_TIME = process.env.CRON_JOB_EXPORT_TIME || '0 9 * * MON'; // Runs every week on Monday at 9:00 AM
+export const LIMIT_SIGHTS = process.env.LIMIT_SIGHTS || 50;
+
+export const EMAIL_REPORT_TEXT = 'Encuentre adjunto el reporte de avistamientos de Marandú.';

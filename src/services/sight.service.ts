@@ -20,6 +20,12 @@ class SightService {
     return sights;
   }
 
+  public async findAllRecentSights(limit: number): Promise<Sight[]> {
+    await this.mongoService.connect();
+    const sights: Sight[] = await this.sights.find({}).sort({ createdAt: -1 }).limit(limit);
+    return sights;
+  }
+
   public async findSightsByUserIdExcludingOwn(userId: string): Promise<Sight[]> {
     await this.mongoService.connect();
 
