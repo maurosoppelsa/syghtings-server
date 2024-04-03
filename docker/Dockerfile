@@ -1,5 +1,5 @@
 # Common build stage
-FROM node:14.15.0-alpine3.12 as common-build-stage
+FROM node:19.0.1-alpine as common-build-stage
 
 RUN mkdir -p /home/node/app
 WORKDIR /home/node/app/
